@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Animal {
+typedef struct {
         char raca[50];
         char cor[20];
         float peso;
@@ -40,6 +40,7 @@ int main(void)
     for (int i = 0; i < 10; i++) {
         lerAnimal(&Animais[i]);
     }
+    printf("\n");
     system("clear");
     printf("Animais cadastrados:\n");
     for (int i = 0; i < 10; i++) {
