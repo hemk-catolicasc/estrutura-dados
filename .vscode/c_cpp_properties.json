@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "compilerPath": "/usr/bin/gcc",
+            "compilerArgs": ["-ansi", "-pedantic", "-Wall"],
+            "cStandard": "c89",
+            "intelliSenseMode": "linux-gcc-x64",
+            "includePath": ["${workspaceFolder}/**"]
+        }
+    ],
+    "version": 4
+}
