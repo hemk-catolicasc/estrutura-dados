@@ -1,0 +1,16 @@
+# Binários compilados
+bin/
+*.exe
+*.o
+*.out
+a.out
+
+# VSCode — mantém a configuração de build versionada
+.vscode/*
+!.vscode/tasks.json
+!.vscode/c_cpp_properties.json
+!.vscode/launch.json
+
+# JetBrains
+.idea/
+cmake-build-*/
