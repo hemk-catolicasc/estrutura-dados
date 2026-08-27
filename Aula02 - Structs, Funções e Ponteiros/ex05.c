@@ -20,6 +20,5 @@ int main(void)
     scanf("%f", &r);
     areaCirculo(r, &area);
     printf("Area do circulo: %.2f\n", area);
-    areaCirculo(r, &area);
     return 0;
 }
