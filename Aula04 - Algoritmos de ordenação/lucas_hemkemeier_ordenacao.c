@@ -29,7 +29,7 @@ Metodos analisados:
 /* contadores globais */
 long comparacoes, trocas, movimentacoes;
 
-int vetorBase[TAM], vetorTeste[TAM], temp[TAM];
+int vetorBase[TAM], vetorTeste[TAM];
 
 typedef struct {
     double comp, troc, mov, ms;
@@ -46,14 +46,14 @@ void bubbleSort(int v[], int tam) {
     while (n <= tam && troca == 1) {
         troca = 0;
         for (i = 0; i < tam - 1; i++) {
-            comparacoes++;                 /* v[i] > v[i+1], entre vizinhos */
+            comparacoes++;          /* comparacao entre vizinhos v[i] > v[i + 1] */
             if (v[i] > v[i + 1]) {
                 troca = 1;
                 aux = v[i];
                 v[i] = v[i + 1];
                 v[i + 1] = aux;
-                trocas++;                  /* par fora de ordem */
-                movimentacoes += 3;        /* 3 atribuicoes da troca */
+                trocas++;           /* par fora de ordem trocado */
+                movimentacoes += 3; /* aux = v[i], v[i] = v[i + 1], v[i + 1] = aux */
             }
         }
         n++;
@@ -65,16 +65,16 @@ void selectionSort(int v[], int n) {
     for (i = 0; i < n - 1; i++) {
         min = i;
         for (j = i + 1; j < n; j++) {
-            comparacoes++;                 /* v[j] < v[min], busca do menor */
+            comparacoes++;          /* comparacao v[j] < v[min] na busca do menor */
             if (v[j] < v[min])
                 min = j;
         }
-        if (min != i) {                    /* so troca se o menor mudou */
+        if (min != i) {
             aux = v[i];
             v[i] = v[min];
             v[min] = aux;
-            trocas++;
-            movimentacoes += 3;
+            trocas++;               /* uma troca por passagem, so quando min != i */
+            movimentacoes += 3;     /* aux = v[i], v[i] = v[min], v[min] = aux */
         }
     }
 }
@@ -83,58 +83,65 @@ void insertionSort(int v[], int n) {
     int i, j, chave;
     for (i = 1; i < n; i++) {
         chave = v[i];
-        movimentacoes++;                   /* guardar a chave */
+        movimentacoes++;            /* guardar o valor na chave */
         j = i - 1;
-        /* j >= 0 e controle; so v[j] > chave conta como comparacao */
-        while (j >= 0) {
-            comparacoes++;
-            if (!(v[j] > chave))
-                break;
+        while (j >= 0 && v[j] > chave) {
+            comparacoes++;          /* v[j] > chave deu verdadeiro */
             v[j + 1] = v[j];
-            movimentacoes++;               /* deslocamento */
+            movimentacoes++;        /* deslocamento para a direita */
             j--;
         }
+        /* o while parou com j >= 0: v[j] > chave foi testado e deu falso.
+           com j == -1 o teste nao chegou a ser feito. */
+        if (j >= 0)
+            comparacoes++;
         v[j + 1] = chave;
-        movimentacoes++;                   /* insercao da chave */
+        movimentacoes++;            /* insercao da chave */
     }
 }
 
-void merge(int v[], int inicio, int meio, int fim) {
+void merge(int *v, int inicio, int meio, int fim) {
     int i, j, k;
+    int temp[TAM];
+
     i = inicio;
     j = meio + 1;
     k = inicio;
+
     while (i <= meio && j <= fim) {
-        comparacoes++;                     /* v[i] <= v[j], na intercalacao */
-        if (v[i] <= v[j]) {
+        comparacoes++;              /* comparacao v[i] < v[j] na intercalacao */
+        if (v[i] < v[j]) {
             temp[k] = v[i];
             i++;
         } else {
             temp[k] = v[j];
             j++;
         }
-        movimentacoes++;                   /* copia para temp */
+        movimentacoes++;            /* copia para temp */
         k++;
     }
+
     while (i <= meio) {
         temp[k] = v[i];
-        movimentacoes++;                   /* sobra da esquerda para temp */
+        movimentacoes++;            /* copia do restante da esquerda para temp */
         i++;
         k++;
     }
+
     while (j <= fim) {
         temp[k] = v[j];
-        movimentacoes++;                   /* sobra da direita para temp */
+        movimentacoes++;            /* copia do restante da direita para temp */
         j++;
         k++;
     }
+
     for (i = inicio; i <= fim; i++) {
         v[i] = temp[i];
-        movimentacoes++;                   /* copia de volta para v */
+        movimentacoes++;            /* copia de volta de temp para v */
     }
 }
 
-void mergeSort(int v[], int inicio, int fim) {
+void mergeSort(int *v, int inicio, int fim) {
     int meio;
     if (inicio < fim) {
         meio = (inicio + fim) / 2;
@@ -145,33 +152,38 @@ void mergeSort(int v[], int inicio, int fim) {
 }
 
 void troca(int *a, int *b) {
-    int aux;
-    if (a == b)                            /* mesma posicao nao e troca */
-        return;
-    aux = *a;
+    int temp;
+    temp = *a;
     *a = *b;
-    *b = aux;
-    trocas++;
-    movimentacoes += 3;
+    *b = temp;
+    /* trocar uma posicao com ela mesma nao muda nada e nao conta */
+    if (a != b) {
+        trocas++;
+        movimentacoes += 3;         /* temp = *a, *a = *b, *b = temp */
+    }
 }
 
-int particiona(int v[], int inicio, int fim) {
+int particiona(int *v, int inicio, int fim) {
     int pivo, i, j;
+
     pivo = v[fim];
-    movimentacoes++;                       /* guardar o pivo */
+    movimentacoes++;                /* guardar o pivo */
     i = inicio - 1;
+
     for (j = inicio; j < fim; j++) {
-        comparacoes++;                     /* v[j] < pivo, na particao */
+        comparacoes++;              /* comparacao v[j] < pivo na particao */
         if (v[j] < pivo) {
             i++;
             troca(&v[i], &v[j]);
         }
     }
+
     troca(&v[i + 1], &v[fim]);
+
     return i + 1;
 }
 
-void quickSort(int v[], int inicio, int fim) {
+void quickSort(int *v, int inicio, int fim) {
     int posPivo;
     if (inicio < fim) {
         posPivo = particiona(v, inicio, fim);
